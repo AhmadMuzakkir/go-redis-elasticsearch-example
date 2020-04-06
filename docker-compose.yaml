@@ -1,0 +1,105 @@
+version: '3.7'
+services:
+  server:
+    image: redis-elasticsearch-go-example/app:latest
+    networks:
+      - elastic
+      - redis
+    environment:
+      ELASTIC_URL: http://elasticsearch1:9200/
+      REDIS_ADDR: redis1:6379
+      PORT: 8001
+    ports:
+      - "8001:8001"
+    command:
+      - bash
+      - -c
+      - |
+        ./wait-for-it.sh -t 60 -h elasticsearch1 -p 9200 -- \
+        ./wait-for-it.sh -t 60 -h redis1 -p 6379 -- \
+        echo "starting server" && \
+        /server
+    depends_on:
+      - elasticsearch1
+      - redis1
+  indexer:
+    image: redis-elasticsearch-go-example/app:latest
+    networks:
+      - elastic
+      - redis
+    environment:
+      ELASTIC_URL: http://elasticsearch1:9200/
+      REDIS_ADDR: redis1:6379
+    command:
+      - bash
+      - -c
+      - |
+        ./wait-for-it.sh -t 60 -h elasticsearch1 -p 9200 -- \
+        ./wait-for-it.sh -t 60 -h redis1 -p 6379 -- \
+        echo "starting indexer" && \
+        /indexer
+    depends_on:
+      - elasticsearch1
+      - redis1
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    environment:
+      - discovery.type=single-node
+      - node.name=elasticsearch1
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: esdata1
+        target: /usr/share/elasticsearch/data
+    networks:
+      - elastic
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    container_name: kibana
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_HOSTS: http://elasticsearch1:9200/
+    ports:
+      - "5601:5601"
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+    networks:
+      - elastic
+  redis1:
+    image: redis:5.0.7
+    ports:
+      - "6379:6379"
+    volumes:
+      - type: volume
+        source: redis1log
+        target: /var/log
+    command: redis-server --appendonly yes
+    networks:
+      - redis
+
+volumes:
+  esdata1:
+  logs:
+  redis1log:
+
+networks:
+  elastic:
+  redis:
