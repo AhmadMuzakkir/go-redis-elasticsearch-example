@@ -30,8 +30,7 @@ var (
 )
 
 func main() {
-	logger.Println("version.BuildTime:\t", version.BuildTime)
-	logger.Println("version.Commit:\t", version.Commit)
+	logger.Printf("version.BuildTime: %v, version.Commit: %v\n", version.BuildTime, version.Commit)
 
 	portFlag := flag.Int("port", 8001, "API server port, default is 8001")
 	elasticURLFlag := flag.String("elastic_url", "http://127.0.0.1:9200", "Elastic server URL, must include protocol, default is http://127.0.0.1:9200")
