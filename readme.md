@@ -136,6 +136,21 @@ To clean up, you can do:
 [terminal 1] docker-compose down -v
 ```
 
+### Using Makefile
+
+To simplify things, you can use the Makefile.
+
+Build the docker image and run the docker compose.
+```bash
+[terminal 1] make run-docker
+```
+
+Stop and clean up the docker compose.
+```bash
+[terminal 1] make clean-docker
+```
+
+
 ### Running all the tests
 
 Prerequisites:
