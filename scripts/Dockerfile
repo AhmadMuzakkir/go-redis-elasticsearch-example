@@ -2,8 +2,17 @@ FROM golang:1.13 AS builder
 WORKDIR /server
 COPY . .
 
-RUN CGO_ENABLED=0 GOFLAGS=-mod=vendor go build ./cmd/server
-RUN CGO_ENABLED=0 GOFLAGS=-mod=vendor go build ./cmd/indexer
+ARG GIT_COMMIT
+ARG PROJECT
+ARG BUILD_TIME
+
+RUN CGO_ENABLED=0 GOFLAGS=-mod=vendor go build \
+-ldflags "-X ${PROJECT}/version.Commit=${GIT_COMMIT} -X ${PROJECT}/version.BuildTime=${BUILD_TIME}" \
+./cmd/server
+
+RUN CGO_ENABLED=0 GOFLAGS=-mod=vendor go build \
+-ldflags "-X ${PROJECT}/version.Commit=${GIT_COMMIT} -X ${PROJECT}/version.BuildTime=${BUILD_TIME}" \
+./cmd/indexer
 
 FROM alpine
 

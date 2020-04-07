@@ -15,6 +15,7 @@ import (
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/queue"
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/store/elastic"
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/store/redis"
+	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/version"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -29,6 +30,9 @@ var (
 )
 
 func main() {
+	logger.Println("version.BuildTime:\t", version.BuildTime)
+	logger.Println("version.Commit:\t", version.Commit)
+
 	portFlag := flag.Int("port", 8001, "API server port, default is 8001")
 	elasticURLFlag := flag.String("elastic_url", "http://127.0.0.1:9200", "Elastic server URL, must include protocol, default is http://127.0.0.1:9200")
 	redisAddrFlag := flag.String("redis_addr", "127.0.0.1:6379", "Redis host addr,  default is 127.0.0.1:6379")

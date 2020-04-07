@@ -12,6 +12,7 @@ import (
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/proto"
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/store"
 	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/store/elastic"
+	"github.com/ahmadmuzakkir/redis-elasticsearch-go-example/version"
 
 	"github.com/adjust/rmq"
 	"github.com/namsral/flag"
@@ -32,6 +33,8 @@ var (
 )
 
 func main() {
+	logger.Printf("version.BuildTime: %v, version.Commit: %v\n", version.BuildTime, version.Commit)
+
 	elasticURLFlag := flag.String("elastic_url", "http://127.0.0.1:9200", "ElasticSearch server URL, must include protocol, default is http://127.0.0.1:9200")
 	redisAddrFlag := flag.String("redis_addr", "127.0.0.1:6379", "Redis host addr,  default is 127.0.0.1:6379")
 	numWorkersFlag := flag.Uint("workers", 10, "Number of workers used to index to ElasticSearch, default is 10")
