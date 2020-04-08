@@ -5,12 +5,13 @@ This project shows an example how to design a system.
 ```text
 Below is the system description:
 
-Design a system to keep track the number of hits for events.
-An event is identified by a unique ID of type string. 
+Design a basic analytics backend that can store and query hits. A hit is an interaction that results in data being sent to the backend.
+
+A hit is identified by a unique ID of type string. 
 
 The system should provide two APIs:
-1. Track an hit for an event.
-2. Retrieve an event's hit counts for the last 5 minutes, 1 hour, 1 day, 2 days and 3 days.
+1. Track (store) a hit.
+2. Retrieve a hit's counts for the last 5 minutes, 1 hour, 1 day, 2 days and 3 days.
 ```
 
 Refer to [endpoints documentations](#endpoints) for more information.
@@ -22,27 +23,27 @@ In this section, we will explain how the system is designed.
 We make some assumptions and estimations about the system.
 - The system is very write heavy, with the read-to-write ratio of 1:100.
 - A few minutes of write-to-read delay is acceptable.
-- The system must be be to handle at least 10,000 hit events per second.
+- The system must be be to handle at least 10,000 hits per second.
 - The Track API must be very fast, the expected 90th latency must be below 100ms.
 
 ### Functional Requirements
-- The system has to track hits for an Event ID.
+- The system has to track hits for an ID.
    
-- The system has to return hit counts for an Event ID.
+- The system has to return hit counts for an ID.
 
 ### Non-Functional Requirements
-- Scalable: the system should handle high throughput i.e. thousands of hit events per seconds. It should also handle spiky traffic.
+- Scalable: the system should handle high throughput i.e. thousands of hits per seconds. It should also handle spiky traffic.
 - Availability: the system should be fault tolerance. It's acceptable if the data returned is stale.
 - Eventual Consistency: we choose eventual consistency since the data does not require strong consistency, and some delay is acceptable.
 - 
 
 ### Data Model
-We can either store individual events or aggregate events in real time.
+We can either store individual hits or aggregate hits in real time.
 
-We choose to store individual events since it's the simplest solution, and more flexible. 
+We choose to store individual hits since it's the simplest solution, and more flexible. 
 The trade off is reads may be slow, and it will consume more storage.
 
-Below is the event model:
+Below is the hit model:
 ```json
 {
   "id": "string",
@@ -55,11 +56,11 @@ The query that will be performed is an aggregation based on time ranges.
 ### High Level Details
 Based on the information above, below is the system design details:
 
-- We use ElasticSearch to store the hit events.
+- We use ElasticSearch to store the hits.
 ElasticSearch has high scalability built in and support complex aggregation queries based on time range.
 - Message queue is implemented using Redis. Protobuf is used as to serialize. 
-- The API server will receive the HTTP requests and insert the hit events into the message queue. 
-- The Indexer will consumed the hits events (in batches) and index them into ElasticSearch (using Bulk insert).
+- The API server will receive the HTTP requests and insert the hits into the message queue. 
+- The Indexer will consumed the hits (in batches) and index them into ElasticSearch (using Bulk insert).
 
 <p align="left">
 	<img width=500 src="docs/system_design.jpg">
@@ -69,7 +70,7 @@ ElasticSearch has high scalability built in and support complex aggregation quer
 
 #### Track - POST /analytics
 
-Track a hit for an event.
+Track a hit.
 
 Request
 ```json
@@ -84,7 +85,7 @@ No Content
 
 #### Retrieve - GET /analytics/{id}
 
-Retrieve hits counts for an event.
+Retrieve hits counts for a hit.
 
 Response
 ```text
@@ -176,8 +177,8 @@ The tool will spam Track requests as fast as possible, using a number of workers
 
 The default number of workers is 1, and you set it using `-w` flag or env.
 
-The default Event ID is `1`, and you can set it using `-i` flag or env.
+The default hit ID is `1`, and you can set it using `-i` flag or env.
 
 ```bash
-go run cmd/benchmark/main.go -w 1 -i eventid
+go run cmd/benchmark/main.go -w 1 -i hitid
 ```

@@ -23,7 +23,7 @@ import (
 )
 
 // Server provides HTTP APIs to track and retrieve views.
-// It acts as the producer of the message queue, where it'll insert track event messages into the queue.
+// It acts as the producer of the message queue, where it'll insert hit messages into the queue.
 
 var (
 	logger = log.New(os.Stdout, "server", log.LstdFlags|log.LUTC)

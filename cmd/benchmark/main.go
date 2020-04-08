@@ -24,11 +24,11 @@ var (
 // output the number of request per second.
 func main() {
 	numOfWorkersFlag := flag.Uint("w", 1, "Number of workers, default is 1")
-	eventIDFlag := flag.String("i", "1", "The event ID to spam, default is '1'")
+	hitIDFlag := flag.String("i", "1", "The hit ID to spam, default is '1'")
 	flag.Parse()
 
 	numOfWorkers := int(*numOfWorkersFlag)
-	eventID := *eventIDFlag
+	hitID := *hitIDFlag
 
 	fmt.Printf("using %d worker(s)", numOfWorkers)
 
@@ -43,7 +43,7 @@ func main() {
 		go func() {
 			defer stopWg.Done()
 
-			flood := floodTrack(eventID)
+			flood := floodTrack(hitID)
 
 			for {
 				select {
