@@ -62,7 +62,7 @@ ElasticSearch has high scalability built in and support complex aggregation quer
 - The Indexer will consumed the hits events (in batches) and index them into ElasticSearch (using Bulk insert).
 
 <p align="left">
-	<img width=500 src="docs/system_design.jpg.png">
+	<img width=500 src="docs/system_design.jpg">
 </p>
 
 ## Endpoints
