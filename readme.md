@@ -124,7 +124,7 @@ Prerequisites:
 
 ```bash
 # build the docker image
-[terminal 1] bash scripts/build.docker.s h
+[terminal 1] bash scripts/build.docker.sh
 
 # run docker compose
 [terminal 1] docker-compose up --build
@@ -134,7 +134,7 @@ Assuming default configurations, following are the available endpoints:
 - Track API: POST http://localhost:8001/analytics
 - Retrieve API: GET http://localhost:8001/analytics
 - ElasticSearch: http://localhost:9200
-- Kibana: http://localhost:6379
+- Kibana: http://localhost:5601
 
 To clean up, you can do:
 ```bash
